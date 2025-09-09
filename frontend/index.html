@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TypeFi – DeFi Typing Game | Earn While You Type</title>
+    <meta name="description" content="TypeFi is the first DeFi-integrated typing game on Somnia Network. Earn TYPE tokens, stake for rewards, mint achievement NFTs, and compete in tournaments.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="icon" href="ztype-trainer/media/favicon.png" type="image/png">
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --panel: rgba(255, 255, 255, 0.05);
+            --accent: #00e5ff;
+            --accent2: #2979ff;
+            --text: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --radius: 16px;
+            --blur: 12px;
+            --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+        
+        @font-face {
+            font-family: 'Seven Segment';
+            src: url('ztype-trainer/media/fonts/Seven Segment.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 25% 25%, rgba(0, 229, 255, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 75% 75%, rgba(41, 121, 255, 0.05) 0%, transparent 50%);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 14px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ---------- Layout ---------- */
+        #app {
+            width: 96vw;
+            max-width: 1400px;
+            height: 95vh;
+            max-height: 900px;
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* ---------- Glass Panel ---------- */
+        .panel {
+            background: var(--panel);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        /* ---------- Header ---------- */
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 32px;
+            min-height: 80px;
+        }
+
+        .logo {
+            font-family: 'Seven Segment', monospace;
+            font-weight: 700;
+            font-size: 32px;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+        }
+
+        .wallet-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            color: #000;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 229, 255, 0.3);
+        }
+
+        .wallet-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4);
+        }
+
+        /* ---------- Game Canvas ---------- */
+        #game-wrapper {
+            grid-column: 2 / 3;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #000;
+            min-height: 500px;
+            padding: 20px;
+        }
+
+        #ztype-game-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background: #000;
+        }
+
+        /* ---------- Sidebar ---------- */
+        .sidebar {
+            padding: 24px;
+            gap: 24px;
+        }
+
+        .sidebar h3 {
+            margin: 0 0 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            text-align: center;
+            position: relative;
+        }
+
+        .sidebar h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 1px;
+        }
+
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .stat:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(0, 229, 255, 0.2);
+        }
+
+        .stat span:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat span:last-child {
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .nft-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .nft-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .nft {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nft:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 229, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(0, 229, 255, 0.2);
+        }
+
+        .nft::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 229, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: transform 0.6s ease;
+        }
+
+        .nft:hover::before {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.6;
+            padding: 16px 24px;
+            font-weight: 500;
+        }
+
+        /* ---------- Game Integration ---------- */
+        body.mobile #ztype-byline { display: none !important; }
+        body.mobile #ztype-gsense { display: none !important; }
+        
+        #trailer-info {
+            display: none !important;
+        }
+        
+        /* Game active state styling */
+        body.game-active #game-wrapper {
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+        
+        body.game-active .sidebar h3 {
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+        
+        /* Canvas aspect ratio container */
+        #game-wrapper {
+            aspect-ratio: 4/3;
+        }
+        
+        #ztype-game-canvas {
+            object-fit: contain;
+            pointer-events: auto;
+            outline: none;
+        }
+        
+        #game-wrapper {
+            pointer-events: auto;
+        }
+        
+        body {
+            pointer-events: auto;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1200px) {
+            #app {
+                grid-template-columns: 250px 1fr 250px;
+                gap: 16px;
+            }
+            
+            .sidebar {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #app {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto auto;
+                height: 100vh;
+                width: 100vw;
+                gap: 12px;
+                padding: 8px;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 16px;
+            }
+            
+            .stats-section,
+            .nft-section {
+                min-width: 200px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            #game-wrapper {
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #app {
+                padding: 4px;
+                gap: 8px;
+            }
+            
+            .panel {
+                border-radius: 12px;
+            }
+            
+            header {
+                padding: 16px 20px;
+                min-height: 60px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .wallet-btn {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="panel">
+            <div class="logo">TypeFi</div>
+            <button class="wallet-btn" id="connectWallet">Connect Wallet</button>
+        </header>
+
+        <aside class="panel sidebar">
+            <div class="stats-section">
+                <h3>Live Stats</h3>
+                <div class="stat"><span>WPM</span><span id="wpm">0</span></div>
+                <div class="stat"><span>Accuracy</span><span id="accuracy">100%</span></div>
+                <div class="stat"><span>Tokens Earned</span><span id="tokens">0 TYPE</span></div>
+                <div class="stat"><span>Best Streak</span><span id="streak">0</span></div>
+            </div>
+        </aside>
+
+        <main id="game-wrapper" class="panel">
+            <canvas id="ztype-game-canvas"></canvas>
+        </main>
+
+        <aside class="panel sidebar">
+            <div class="nft-section">
+                <h3>Achievement NFTs</h3>
+                <div class="nft-grid">
+                    <div class="nft" title="Speed Demon">🏃</div>
+                    <div class="nft" title="Perfectionist">✨</div>
+                    <div class="nft" title="Marathon">🏅</div>
+                    <div class="nft" title="First Blood">🩸</div>
+                    <div class="nft" title="Night Owl">🦉</div>
+                    <div class="nft" title="Top 10">🏆</div>
+                </div>
+            </div>
+        </aside>
+
+        <footer class="panel">Powered by Somnia Network • TypeFi v2.0</footer>
+    </div>
+
+    <!-- Web3 Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@4.2.2/dist/web3.min.js"></script>
+    
+    <!-- TypeFi Integration Script -->
+    <script>
+        // Ultra minimal setup - let the game handle everything
+        setTimeout(() => {
+            console.log('TypeFi UI loaded - hands off mode');
+            
+            // Only fix canvas stretching
+            const canvas = document.getElementById('ztype-game-canvas');
+            if (canvas) {
+                canvas.style.maxWidth = '800px';
+                canvas.style.maxHeight = '600px';
+                canvas.style.margin = '0 auto';
+                canvas.style.display = 'block';
+            }
+            
+            // Simple mock stats
+            let mockTokens = 0;
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    const wpm = Math.floor(Math.random() * 60) + 30;
+                    mockTokens += Math.floor(Math.random() * 2) + 1;
+                    const accuracy = Math.floor(Math.random() * 8) + 92;
+                    const streak = Math.floor(Math.random() * 15) + 5;
+                    
+                    document.getElementById('wpm').textContent = wpm;
+                    document.getElementById('tokens').textContent = mockTokens + ' TYPE';
+                    document.getElementById('accuracy').textContent = accuracy + '%';
+                    document.getElementById('streak').textContent = streak;
+                }
+            }, 4000);
+            
+            // Simple wallet button
+            document.getElementById('connectWallet').addEventListener('click', function() {
+                this.textContent = 'Wallet Connected';
+                this.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+            });
+            
+            // Add professional hover effects to NFTs
+            const nfts = document.querySelectorAll('.nft');
+            nfts.forEach((nft, index) => {
+                nft.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.15) rotateZ(5deg)';
+                    this.style.zIndex = '10';
+                });
+                
+                nft.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) rotateZ(0deg)';
+                    this.style.zIndex = '1';
+                });
+                
+                // Add click effects
+                nft.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1.1) rotateZ(5deg)';
+                    }, 150);
+                });
+                
+                // Randomly "unlock" some NFTs after a delay
+                setTimeout(() => {
+                    if (Math.random() > 0.5) {
+                        nft.style.background = 'linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(41, 121, 255, 0.1))';
+                        nft.style.borderColor = 'rgba(0, 229, 255, 0.3)';
+                        nft.style.boxShadow = '0 0 20px rgba(0, 229, 255, 0.3)';
+                    }
+                }, 5000 + (index * 2000));
+            });
+        });
+    </script>
+    
+    <!-- Fix keyboard event handling -->
+    <script>
+        // Override mobile detection before game loads
+        Object.defineProperty(window, 'ig', {
+            value: window.ig || {},
+            writable: true
+        });
+        
+        // Ensure game treats this as desktop to prevent mobile canvas resizing
+        if (!window.ig.ua) {
+            window.ig.ua = { mobile: false };
+        }
+        
+        // Ensure keyboard events reach the game
+        document.addEventListener('keydown', function(e) {
+            // Don't interfere with any key events - let them pass through naturally
+            console.log('Key pressed:', e.key, e.keyCode);
+        }, true); // Use capture phase
+        
+        // Make sure the page is focusable for keyboard events
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure document body can receive keyboard events
+            document.body.tabIndex = -1;
+            document.body.focus();
+        });
+    </script>
+    
+    <!-- Game Scripts - Pure ZType without trainer interference -->
+    <script type="text/javascript" src="ztype.js" charset="UTF-8"></script>
+</body>
+</html>
