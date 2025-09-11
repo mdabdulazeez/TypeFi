@@ -2986,9 +2986,6 @@ ig.module('game.menus.interstitial').requires('game.menus.base').defines(functio
               , by = 64
               , bw = this.banner.width
               , bh = this.banner.height;
-            if (x > bx && x < bx + bw && y > by && y < by + bh) {
-                window.open('http://nofatenetmusic.bandcamp.com/album/the-phoboslab-works');
-            }
         },
         draw: function() {
             this.parent();
@@ -3605,28 +3602,12 @@ ig.module('game.menus.title').requires('game.menus.base', 'game.menus.detailed-s
             ig.game.setGame();
         },
     });
-    MenuItemOnlineVersion = MenuItem.extend({
-        getText: function() {
-            return 'online version';
-        },
-        ok: function() {
-            window.location.href='http://zty.pe/';
-        },
-    });
-    MenuItemAboutTrainer = MenuItem.extend({
-        getText: function() {
-            return 'about trainer';
-        },
-        ok: function() {
-            window.location.href='https://github.com/KevinWang15/ztype-trainer';
-        },
-    });
     MenuTitle = Menu.extend({
         itemClasses: [],
         scale: 0.75,
         y: 0,
         init: function() {
-            this.itemClasses = [MenuItemNormalMode,MenuItemOnlineVersion,MenuItemAboutTrainer];
+            this.itemClasses = [MenuItemNormalMode];
             
             this.parent();
             this.items[0].y = 740;
@@ -3647,8 +3628,7 @@ ig.module('game.menus.title').requires('game.menus.base', 'game.menus.detailed-s
         },
         scroll: 0,
         background: new ig.Image('media/background/stars.jpg'),
-        ztype: new ig.Image('media/title/ztype.png'),
-        phoboslab: new ig.Image('media/title/phoboslab.png'),
+        ztype: new ig.Image('media/title/typefi.png'),
         ship: new ig.Image('media/title/ship.png'),
         exhaust: new ig.Image('media/title/exhaust.png'),
         infoIcon: new ig.Image('media/ui/information.png'),
@@ -3671,7 +3651,6 @@ ig.module('game.menus.title').requires('game.menus.base', 'game.menus.detailed-s
             this.scroll = this.scroll % this.background.height;
             this.background.draw(0, this.scroll - this.background.height);
             this.background.draw(0, this.scroll);
-            this.phoboslab.draw((ig.system.width / this.scale - this.phoboslab.width) / 2, 80 - ig.ease.inOutQuad(this.transition, 0, 2800, 1));
             this.ztype.draw((ig.system.width / this.scale - this.ztype.width) / 2, 150 - ig.ease.inOutQuad(this.transition, 0, 1000, 1));
             ctx.globalAlpha = Math.sin(this.transition * Math.PI);
             ctx.globalCompositeOperation = 'lighter';
@@ -3716,15 +3695,7 @@ ig.module('game.menus.title').requires('game.menus.base', 'game.menus.detailed-s
             if (ig.game.gameTransitionTimer) {
                 return;
             }
-            if (ig.input.mouse.y < 104 && ig.input.pressed('click')) {
-                if (window.ejecta) {
-                    ejecta.openURL('https://itunes.apple.com/us/artist/phoboslab/id312666931');
-                } 
-                else {
-                    window.open('https://itunes.apple.com/us/artist/phoboslab/id312666931');
-                }
-                return;
-            }
+            
             this.parent();
             if (ig.input.mouse.x > ig.system.width - 64 && ig.input.mouse.y > ig.system.height - 64) {
                 if (ig.input.pressed('click')) {
@@ -5076,6 +5047,8 @@ ig.module('game.main').requires('impact.game', 'impact.font', 'game.menus.about'
         emps: 0,
         personalBest: 0,
         isPersonalBest: false,
+        // HUD update throttling
+        _hudLastUpdateTime: 0,
         waitingForItunes: false,
         adPage: null ,
         difficulty: (ig.ua.mobile ? 'MOBILE' : 'DESKTOP'),
@@ -5117,6 +5090,8 @@ ig.module('game.main').requires('impact.game', 'impact.font', 'game.menus.about'
             }
             ;
             this.personalBest = parseInt(localStorage.getItem('highscore')) | 0;
+            // initialize HUD on load
+            this.updateHud();
             if (window.Ejecta) {
                 this.gameCenter = new Ejecta.GameCenter();
                 this.gameCenter.authenticate();
@@ -5541,6 +5516,12 @@ ig.module('game.main').requires('impact.game', 'impact.font', 'game.menus.about'
             }
             this._rscreen.x = Math.random() * this._screenShake;
             this._rscreen.y = Math.random() * this._screenShake;
+
+            // Throttled HUD updates (~4 times per second)
+            if (ig.Timer.time - this._hudLastUpdateTime > 0.25) {
+                this._hudLastUpdateTime = ig.Timer.time;
+                this.updateHud();
+            }
         },
         screenShake: function(strength) {
             this._screenShake = Math.max(strength, this._screenShake);
@@ -5570,6 +5551,43 @@ ig.module('game.main').requires('impact.game', 'impact.font', 'game.menus.about'
             }
             if (this.waitingForItunes) {
                 this.drawSpinner();
+            }
+        },
+
+        // --- UI HUD integration ---
+        updateHud: function() {
+            // Safely update DOM if the stats panel exists
+            if (typeof document === 'undefined') { return; }
+
+            try {
+                var wpmEl = document.getElementById('wpm');
+                var accEl = document.getElementById('accuracy');
+                var tokensEl = document.getElementById('tokens');
+                var streakEl = document.getElementById('streak');
+
+                if (!wpmEl && !accEl && !tokensEl && !streakEl) { return; }
+
+                // Compute stats
+                var totalKeystrokes = (this.hits | 0) + (this.misses | 0);
+                var minutesPlayed = (this.gameTime > 0 ? (this.gameTime / 60) : 0);
+                // Approximate words typed as keystrokes/5
+                var wordsTyped = (this.hits | 0) / 5;
+                var wpm = minutesPlayed > 0 ? Math.max(0, Math.floor(wordsTyped / minutesPlayed)) : 0;
+
+                var accuracy = totalKeystrokes > 0 ? Math.max(0, Math.min(100, ((this.hits / totalKeystrokes) * 100))) : 100;
+                // Simple tokenization: 1 TYPE per 10 score points
+                var tokens = Math.max(0, Math.floor((this.score | 0) / 10));
+
+                if (wpmEl) { wpmEl.textContent = wpm; }
+                if (accEl) { 
+                    var accStr = accuracy.toFixed(0) + '%';
+                    accEl.textContent = accStr; 
+                    accEl.setAttribute('data-value', accStr);
+                }
+                if (tokensEl) { tokensEl.textContent = tokens + ' TYPE'; }
+                if (streakEl) { streakEl.textContent = this.streak | 0; }
+            } catch (e) {
+                // Avoid breaking the game loop if DOM is unavailable
             }
         },
         drawSpinner: function() {

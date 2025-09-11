@@ -9,23 +9,25 @@
 
     <style>
         :root {
-            --bg: #0a0a0a;
-            --panel: rgba(255, 255, 255, 0.05);
-            --accent: #00e5ff;
-            --accent2: #2979ff;
-            --text: #e0e0e0;
-            --text-secondary: #b0b0b0;
+            --bg: #000000;
+            --panel: rgba(20, 20, 20, 0.8);
+            --accent: #00FFFF;
+            --accent2: #666666;
+            --text: #E0E0E0;
+            --text-secondary: #B0B0B0;
+            --success: #00FF88;
+            --warning: #FF8800;
             --radius: 16px;
             --blur: 12px;
             --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
         }
 
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
         
         @font-face {
             font-family: 'Seven Segment';
-            src: url('ztype-trainer/media/fonts/Seven Segment.woff') format('woff');
+            src: url('media/fonts/Seven Segment.woff') format('woff');
             font-weight: normal;
             font-style: normal;
         }
@@ -39,10 +41,12 @@
             padding: 0;
             height: 100%;
             background: var(--bg);
-            background-image: radial-gradient(circle at 25% 25%, rgba(0, 229, 255, 0.05) 0%, transparent 50%),
-                              radial-gradient(circle at 75% 75%, rgba(41, 121, 255, 0.05) 0%, transparent 50%);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(51, 51, 51, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(102, 102, 102, 0.05) 0%, transparent 50%),
+                linear-gradient(45deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
             color: var(--text);
-            font-family: var(--font);
+            font-family: 'Seven Segment', monospace;
             font-size: 14px;
             overflow: hidden;
             display: flex;
@@ -57,7 +61,7 @@
             height: 95vh;
             max-height: 900px;
             display: grid;
-            grid-template-columns: 280px 1fr 280px;
+            grid-template-columns: 320px 1fr 320px;
             grid-template-rows: auto 1fr auto;
             gap: 20px;
             animation: fadeIn 1s ease;
@@ -70,12 +74,15 @@
 
         /* ---------- Glass Panel ---------- */
         .panel {
-            background: var(--panel);
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.7));
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(102, 102, 102, 0.3);
             border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            box-shadow: 
+                var(--shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 20px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             position: relative;
@@ -88,54 +95,91 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(102, 102, 102, 0.5), transparent);
             border-radius: var(--radius) var(--radius) 0 0;
         }
 
         /* ---------- Header ---------- */
         header {
             grid-column: 1 / -1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
             padding: 20px 32px;
-            min-height: 80px;
+            min-height: 120px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            flex-direction: row !important;
         }
 
         .logo {
-            font-family: 'Seven Segment', monospace;
-            font-weight: 700;
-            font-size: 32px;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-transform: uppercase;
-            text-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+            position: relative;
+            align-self: center;
+            height: fit-content;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #000000;
+        }
+
+        .logo-image {
+            max-height: 80px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: brightness(1.1) contrast(1.1);
+            transition: all 0.3s ease;
+        }
+
+        .logo-image:hover {
+            filter: brightness(1.2) contrast(1.2);
+            transform: scale(1.02);
         }
 
         .wallet-btn {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            border: none;
-            color: #000;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 12px 24px;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #000000, #333333) !important;
+            border: 2px solid #666666 !important;
+            color: #cccccc !important;
+            font-family: 'Seven Segment', monospace !important;
+            font-weight: 700;
+            font-size: 18px;
+            padding: 18px 36px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(0, 229, 255, 0.3);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            align-self: center;
+            height: fit-content;
+            white-space: nowrap;
+            z-index: 1000;
+            position: relative;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-width: 150px;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .wallet-btn:hover {
             transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4);
+            box-shadow: 
+                0 8px 25px rgba(102, 102, 102, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: #888888 !important;
+            background: linear-gradient(135deg, #1a1a1a, #444444) !important;
+            color: #ffffff !important;
         }
 
         /* ---------- Game Canvas ---------- */
         #game-wrapper {
             grid-column: 2 / 3;
+            grid-row: 2 / 3;
             position: relative;
             display: flex;
             align-items: center;
@@ -145,6 +189,9 @@
             background: #000;
             min-height: 500px;
             padding: 20px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
         }
 
         #ztype-game-canvas {
@@ -162,6 +209,22 @@
         .sidebar {
             padding: 24px;
             gap: 24px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .sidebar:first-of-type {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+        }
+
+        .sidebar:last-of-type {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
         }
 
         .sidebar h3 {
@@ -171,6 +234,9 @@
             color: var(--accent);
             text-align: center;
             position: relative;
+            font-family: 'Seven Segment', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .sidebar h3::after {
@@ -183,46 +249,84 @@
             height: 2px;
             background: linear-gradient(90deg, var(--accent), var(--accent2));
             border-radius: 1px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
         }
 
         .stats-section {
             display: flex;
             flex-direction: column;
             gap: 14px;
+            flex: 1;
+            width: 100%;
         }
 
         .stat {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
+            font-size: 18px;
             padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.03);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(20, 20, 20, 0.4));
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 102, 102, 0.2);
             transition: all 0.2s ease;
+            font-family: 'Seven Segment', monospace;
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .stat:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(0, 229, 255, 0.2);
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.8), rgba(40, 40, 40, 0.6));
+            border-color: var(--accent);
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 15px rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .stat span:first-child {
             color: var(--text-secondary);
             font-weight: 500;
+            font-family: 'Seven Segment', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat span:last-child {
             font-weight: 700;
-            color: #fff;
+            color: var(--text);
             font-size: 15px;
+            font-family: 'Seven Segment', monospace;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        /* Color-coded accuracy feedback */
+        .stat[data-stat="accuracy"] span:last-child[data-value*="100%"],
+        .stat[data-stat="accuracy"] span:last-child[data-value*="9"],
+        .stat[data-stat="accuracy"] span:last-child[data-value*="8"] {
+            color: var(--success);
+        }
+
+        .stat[data-stat="accuracy"] span:last-child[data-value*="7"],
+        .stat[data-stat="accuracy"] span:last-child[data-value*="6"],
+        .stat[data-stat="accuracy"] span:last-child[data-value*="5"] {
+            color: var(--warning);
+        }
+
+        .stat[data-stat="accuracy"] span:last-child[data-value*="4"],
+        .stat[data-stat="accuracy"] span:last-child[data-value*="3"],
+        .stat[data-stat="accuracy"] span:last-child[data-value*="2"] {
+            color: #FF4444;
         }
 
         .nft-section {
             display: flex;
             flex-direction: column;
             gap: 16px;
+            flex: 1;
+            width: 100%;
+            height: 100%;
         }
 
         .nft-grid {
@@ -233,8 +337,8 @@
 
         .nft {
             aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 20, 0.6));
+            border: 1px solid rgba(51, 51, 51, 0.5);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -244,13 +348,18 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         .nft:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(0, 229, 255, 0.3);
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.7));
+            border-color: rgba(102, 102, 102, 0.6);
             transform: scale(1.05);
-            box-shadow: 0 4px 16px rgba(0, 229, 255, 0.2);
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 4px 16px rgba(0, 0, 0, 0.6);
         }
 
         .nft::before {
@@ -260,7 +369,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(0, 229, 255, 0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(102, 102, 102, 0.2), transparent);
             transform: rotate(45deg);
             transition: transform 0.6s ease;
         }
@@ -272,11 +381,18 @@
         /* ---------- Footer ---------- */
         footer {
             grid-column: 1 / -1;
+            grid-row: 3 / 4;
             text-align: center;
             font-size: 12px;
             opacity: 0.6;
             padding: 16px 24px;
             font-weight: 500;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
         }
 
         /* ---------- Game Integration ---------- */
@@ -316,88 +432,134 @@
             pointer-events: auto;
         }
 
-        /* ---------- Responsive ---------- */
-        @media (max-width: 1200px) {
+        /* ---------- Mobile Block Screen ---------- */
+        .mobile-block {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .mobile-block h1 {
+            font-family: 'Seven Segment', monospace;
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .mobile-block p {
+            font-size: 18px;
+            color: var(--text);
+            line-height: 1.6;
+            max-width: 500px;
+            margin-bottom: 20px;
+            font-family: 'Seven Segment', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-block .icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            opacity: 0.7;
+        }
+
+        /* ---------- Dynamic Responsive ---------- */
+        @media (max-width: 1200px) and (min-width: 769px) {
             #app {
-                grid-template-columns: 250px 1fr 250px;
+                grid-template-columns: 280px 1fr 280px;
                 gap: 16px;
             }
             
             .sidebar {
-                padding: 20px;
+                padding: 18px;
+            }
+
+            .logo-image {
+                max-height: 60px;
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) and (min-width: 769px) {
             #app {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto 1fr auto auto;
-                height: 100vh;
-                width: 100vw;
-                gap: 12px;
-                padding: 8px;
+                grid-template-columns: 240px 1fr 240px;
+                gap: 14px;
             }
-            
-            .sidebar {
-                flex-direction: row;
-                overflow-x: auto;
-                padding: 16px;
-            }
-            
-            .stats-section,
-            .nft-section {
-                min-width: 200px;
-            }
-            
-            .logo {
-                font-size: 24px;
-            }
-            
-            #game-wrapper {
-                min-height: 400px;
-            }
-        }
 
-        @media (max-width: 600px) {
-            #app {
-                padding: 4px;
+            .logo-image {
+                max-height: 50px;
+            }
+
+            .stat {
+                font-size: 16px;
+                padding: 10px 14px;
+            }
+
+            .nft-grid {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
             }
-            
-            .panel {
-                border-radius: 12px;
+        }
+
+        /* Mobile Block - Show for screens smaller than tablets */
+        @media (max-width: 768px) {
+            .mobile-block {
+                display: flex !important;
             }
             
-            header {
-                padding: 16px 20px;
-                min-height: 60px;
+            #app {
+                display: none !important;
             }
-            
-            .logo {
-                font-size: 20px;
-            }
-            
+        }
+
+        /* Tablet optimizations */
+        @media (min-width: 769px) and (max-width: 1024px) {
             .wallet-btn {
-                padding: 8px 16px;
-                font-size: 12px;
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+
+            header {
+                padding: 18px 28px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Block Screen -->
+    <div class="mobile-block">
+        <div class="icon">💻</div>
+        <h1>Type-Fi</h1>
+        <p>This game is optimized for tablets and desktop devices.</p>
+        <p>Please use a larger screen to enjoy the full Type-Fi experience.</p>
+        <p style="font-size: 14px; opacity: 0.7; margin-top: 30px;">Minimum screen width: 769px</p>
+    </div>
+
     <div id="app">
         <header class="panel">
-            <div class="logo">TypeFi</div>
+            <div class="logo">
+                <img src="media/title/typefi.png" alt="TYPE-Fi" class="logo-image">
+            </div>
             <button class="wallet-btn" id="connectWallet">Connect Wallet</button>
         </header>
 
         <aside class="panel sidebar">
             <div class="stats-section">
                 <h3>Live Stats</h3>
-                <div class="stat"><span>WPM</span><span id="wpm">0</span></div>
-                <div class="stat"><span>Accuracy</span><span id="accuracy">100%</span></div>
-                <div class="stat"><span>Tokens Earned</span><span id="tokens">0 TYPE</span></div>
-                <div class="stat"><span>Best Streak</span><span id="streak">0</span></div>
+                <div class="stat" data-stat="wpm"><span>WPM</span><span id="wpm">0</span></div>
+                <div class="stat" data-stat="accuracy"><span>Accuracy</span><span id="accuracy" data-value="100%">100%</span></div>
+                <div class="stat" data-stat="tokens"><span>Tokens Earned</span><span id="tokens">0 TYPE</span></div>
+                <div class="stat" data-stat="streak"><span>Best Streak</span><span id="streak">0</span></div>
             </div>
         </aside>
 
@@ -419,7 +581,7 @@
             </div>
         </aside>
 
-        <footer class="panel">Powered by Somnia Network • TypeFi v2.0</footer>
+        <footer class="panel">Powered by Somnia Network • TYPE-FI v2.0</footer>
     </div>
 
     <!-- Web3 Integration -->
@@ -427,72 +589,163 @@
     
     <!-- TypeFi Integration Script -->
     <script>
-        // Ultra minimal setup - let the game handle everything
-        setTimeout(() => {
-            console.log('TypeFi UI loaded - hands off mode');
+        // Dynamic Device Detection and Mobile Block
+        function checkDevice() {
+            const isMobile = window.innerWidth <= 768;
+            const mobileBlock = document.querySelector('.mobile-block');
+            const app = document.getElementById('app');
             
-            // Only fix canvas stretching
+            if (isMobile) {
+                mobileBlock.style.display = 'flex';
+                app.style.display = 'none';
+                document.body.style.overflow = 'hidden';
+            } else {
+                mobileBlock.style.display = 'none';
+                app.style.display = 'grid';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Check on load and resize
+        window.addEventListener('load', checkDevice);
+        window.addEventListener('resize', checkDevice);
+
+        // Dynamic UI Updates
+        function initDynamicFeatures() {
+            console.log('TypeFi UI loaded with dynamic features');
+            
+            // Dynamic canvas sizing
             const canvas = document.getElementById('ztype-game-canvas');
             if (canvas) {
-                canvas.style.maxWidth = '800px';
-                canvas.style.maxHeight = '600px';
-                canvas.style.margin = '0 auto';
-                canvas.style.display = 'block';
+                function resizeCanvas() {
+                    const wrapper = document.getElementById('game-wrapper');
+                    const maxWidth = Math.min(wrapper.offsetWidth - 40, 800);
+                    const maxHeight = Math.min(wrapper.offsetHeight - 40, 600);
+                    
+                    canvas.style.maxWidth = maxWidth + 'px';
+                    canvas.style.maxHeight = maxHeight + 'px';
+                    canvas.style.margin = '0 auto';
+                    canvas.style.display = 'block';
+                }
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
             }
             
-            // Simple mock stats
+            // Dynamic stats with realistic patterns
             let mockTokens = 0;
-            setInterval(() => {
-                if (Math.random() > 0.8) {
-                    const wpm = Math.floor(Math.random() * 60) + 30;
-                    mockTokens += Math.floor(Math.random() * 2) + 1;
-                    const accuracy = Math.floor(Math.random() * 8) + 92;
-                    const streak = Math.floor(Math.random() * 15) + 5;
-                    
-                    document.getElementById('wpm').textContent = wpm;
-                    document.getElementById('tokens').textContent = mockTokens + ' TYPE';
-                    document.getElementById('accuracy').textContent = accuracy + '%';
-                    document.getElementById('streak').textContent = streak;
-                }
-            }, 4000);
+            let gameActive = false;
+            let sessionTime = 0;
             
-            // Simple wallet button
-            document.getElementById('connectWallet').addEventListener('click', function() {
-                this.textContent = 'Wallet Connected';
-                this.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+            // Simulate game activity detection
+            document.addEventListener('keydown', () => {
+                gameActive = true;
+                document.body.classList.add('game-active');
+                setTimeout(() => {
+                    gameActive = false;
+                    document.body.classList.remove('game-active');
+                }, 3000);
             });
             
-            // Add professional hover effects to NFTs
+            // Dynamic stats updates
+            setInterval(() => {
+                sessionTime++;
+                
+                if (gameActive || Math.random() > 0.7) {
+                    const baseWPM = 45 + Math.sin(sessionTime * 0.1) * 15;
+                    const wpm = Math.max(20, Math.floor(baseWPM + Math.random() * 20));
+                    const tokensGained = Math.floor(wpm / 20) + Math.floor(Math.random() * 3);
+                    mockTokens += tokensGained;
+                    const accuracy = Math.max(85, Math.floor(95 + Math.sin(sessionTime * 0.05) * 8));
+                    const streak = Math.floor(sessionTime / 10) + Math.floor(Math.random() * 10);
+                    
+                    const wpmElement = document.getElementById('wpm');
+                    const tokensElement = document.getElementById('tokens');
+                    const accuracyElement = document.getElementById('accuracy');
+                    const streakElement = document.getElementById('streak');
+                    
+                    wpmElement.textContent = wpm;
+                    tokensElement.textContent = mockTokens + ' TYPE';
+                    accuracyElement.textContent = accuracy + '%';
+                    accuracyElement.setAttribute('data-value', accuracy + '%');
+                    streakElement.textContent = streak;
+                    
+                    // Add visual feedback for improvements
+                    if (wpm > parseInt(wpmElement.getAttribute('data-prev') || '0')) {
+                        wpmElement.style.color = 'var(--success)';
+                        setTimeout(() => wpmElement.style.color = 'var(--text)', 1000);
+                    }
+                    wpmElement.setAttribute('data-prev', wpm);
+                    
+                    // Add visual feedback for token gains
+                    if (tokensGained > 0) {
+                        const tokenElement = document.getElementById('tokens');
+                        tokenElement.style.color = '#00e5ff';
+                        tokenElement.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            tokenElement.style.color = '#fff';
+                            tokenElement.style.transform = 'scale(1)';
+                        }, 500);
+                    }
+                }
+            }, 3000);
+            
+            // Enhanced wallet connection
+            const walletBtn = document.getElementById('connectWallet');
+            walletBtn.addEventListener('click', function() {
+                this.textContent = 'Connecting...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.textContent = 'Wallet Connected ✓';
+                    this.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+                    this.disabled = false;
+                    
+                    // Show connection success effect
+                    this.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.5)';
+                    setTimeout(() => {
+                        this.style.boxShadow = '0 4px 16px rgba(0, 229, 255, 0.3)';
+                    }, 2000);
+                }, 1500);
+            });
+            
+            // Dynamic NFT interactions
             const nfts = document.querySelectorAll('.nft');
             nfts.forEach((nft, index) => {
+                // Enhanced hover effects
                 nft.addEventListener('mouseenter', function() {
                     this.style.transform = 'scale(1.15) rotateZ(5deg)';
                     this.style.zIndex = '10';
+                    this.style.filter = 'brightness(1.2)';
                 });
                 
                 nft.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1) rotateZ(0deg)';
                     this.style.zIndex = '1';
+                    this.style.filter = 'brightness(1)';
                 });
                 
-                // Add click effects
-                nft.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1.1) rotateZ(5deg)';
-                    }, 150);
-                });
-                
-                // Randomly "unlock" some NFTs after a delay
+                // Dynamic unlock system
                 setTimeout(() => {
-                    if (Math.random() > 0.5) {
-                        nft.style.background = 'linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(41, 121, 255, 0.1))';
-                        nft.style.borderColor = 'rgba(0, 229, 255, 0.3)';
-                        nft.style.boxShadow = '0 0 20px rgba(0, 229, 255, 0.3)';
+                    if (Math.random() > 0.4) {
+                        nft.style.background = 'linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.7))';
+                        nft.style.borderColor = 'rgba(102, 102, 102, 0.6)';
+                        nft.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.6)';
+                        nft.classList.add('unlocked');
+                        
+                        // Unlock animation
+                        nft.style.animation = 'pulse 2s ease-in-out';
                     }
-                }, 5000 + (index * 2000));
+                }, 3000 + (index * 1500));
             });
-        });
+        }
+
+        // Initialize when not on mobile
+        setTimeout(() => {
+            if (window.innerWidth > 768) {
+                initDynamicFeatures();
+            }
+        }, 100);
     </script>
     
     <!-- Fix keyboard event handling -->
