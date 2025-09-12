@@ -1,3 +1,5 @@
+"use client";
+
 import { TYPING_GAME_ABI, TYPING_GAME_ADDRESS } from '@/config/contracts';
 import { PlayerScore } from '@/types/game';
 import { useReadContract, useWriteContract } from 'wagmi';

@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from 'react';
 import { GameState, GameStats } from '@/types/game';
 import { useTypingGame } from '@/hooks/useTypingGame';

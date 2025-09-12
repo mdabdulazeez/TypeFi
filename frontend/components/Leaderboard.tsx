@@ -1,5 +1,7 @@
+"use client";
+
 import { useTypingGame } from '@/hooks/useTypingGame';
-import { PlayerScore } from '@/types/game';
+import { formatDistanceToNow } from 'date-fns';
 
 export function Leaderboard() {
   const { scores } = useTypingGame();
@@ -8,16 +10,16 @@ export function Leaderboard() {
     return (
       <div className="mt-8 p-6 bg-gray-50 rounded-lg">
         <h2 className="text-xl font-bold mb-4">Leaderboard</h2>
-        <p className="text-gray-600">No scores yet. Be the first to play!</p>
+        <p className="text-gray-500">No scores yet. Be the first to play!</p>
       </div>
     );
   }
 
-  // Sort scores by WPM
+  // Sort scores by WPM and accuracy
   const sortedScores = [...scores].sort((a, b) => {
-    const aWpm = Number(a.wpm);
-    const bWpm = Number(b.wpm);
-    return bWpm - aWpm;
+    const wpmDiff = Number(b.wpm) - Number(a.wpm);
+    if (wpmDiff !== 0) return wpmDiff;
+    return Number(b.accuracy) - Number(a.accuracy);
   });
 
   return (
