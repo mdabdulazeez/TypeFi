@@ -4,19 +4,19 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { Chain } from 'viem';
 
 const somniaTestnet: Chain = {
-  id: 2002,
+  id: 50312,
   name: 'Somnia Testnet',
   nativeCurrency: {
     decimals: 18,
-    name: 'SOMI',
-    symbol: 'SOMI',
+    name: 'STT',
+    symbol: 'STT',
   },
   rpcUrls: {
-    public: { http: ['https://testnet-rpc.somnia.network/'] },
-    default: { http: ['https://testnet-rpc.somnia.network/'] },
+    public: { http: ['https://dream-rpc.somnia.network/'] },
+    default: { http: ['https://dream-rpc.somnia.network/'] },
   },
   blockExplorers: {
-    default: { name: 'SomniaScan', url: 'https://testnet.somniascan.io' },
+    default: { name: 'Somnia Testnet Explorer', url: 'https://somnia-testnet.socialscan.io' },
   },
   testnet: true,
 };
