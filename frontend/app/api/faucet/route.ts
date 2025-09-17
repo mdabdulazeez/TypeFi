@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 
-// Faucet wallet
-const FAUCET_PRIVATE_KEY = '6e8a898b02f478a157c8dcd23834b3f11d22f57130437f2b4a8e42ce8168b844';
+// Faucet wallet - NEVER hardcode private keys!
+const FAUCET_PRIVATE_KEY = process.env.FAUCET_PRIVATE_KEY;
 
 export async function POST(request: NextRequest) {
   try {
+    // Security check - ensure private key is configured
+    if (!FAUCET_PRIVATE_KEY) {
+      console.error('FAUCET_PRIVATE_KEY environment variable is not set');
+      return NextResponse.json({ 
+        error: 'Faucet service unavailable',
+        details: 'Server configuration error - contact administrator'
+      }, { status: 503 });
+    }
+    
     const { recipient } = await request.json();
 
     if (!recipient) {

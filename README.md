@@ -128,7 +128,11 @@ Create `.env` files:
 ```env
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
 NEXT_PUBLIC_SOMNIA_RPC=https://dream-rpc.somnia.network/
+# CRITICAL: Add your faucet private key (testnet only!)
+FAUCET_PRIVATE_KEY=your_private_key_without_0x_prefix
 ```
+
+⚠️ **SECURITY WARNING**: Never commit private keys to version control! Use only testnet keys with limited funds.
 
 **blockend/.env**
 ```env
@@ -234,48 +238,7 @@ typefi/
 - Leaderboard functionality
 - Mobile responsiveness
 
-## 📊 Pitch Deck
 
-[📋 View Pitch Deck](docs/TypeFi-Pitch-Deck.pdf)
-
-**Key Slides:**
-1. Problem & Solution
-2. Product Demo
-3. Technology Stack
-4. Somnia Integration
-5. Market Opportunity
-6. Roadmap
-
-## 🔮 Future Roadmap
-
-### Phase 1: Enhanced Competition
-- [ ] Tournament brackets
-- [ ] Multiplayer real-time races
-- [ ] Custom difficulty levels
-- [ ] Achievement system
-
-### Phase 2: Tokenomics
-- [ ] Native TypeFi token
-- [ ] Staking mechanisms
-- [ ] Prize pools and rewards
-- [ ] NFT achievements
-
-### Phase 3: Platform Expansion
-- [ ] Multiple game modes (coding, math, etc.)
-- [ ] Educational partnerships
-- [ ] Corporate team challenges
-- [ ] Cross-chain compatibility
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Setup
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
 ## 📄 License
 
@@ -287,12 +250,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **OpenZeppelin** for security-audited smart contracts
 - **RainbowKit & Wagmi** for excellent Web3 developer experience
 - **Hardhat** for robust smart contract development tools
-
-## 📞 Contact
-
-- **Project Lead**: [Your Name](mailto:your.email@example.com)
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-- **Twitter**: [@yourtwitterhandle](https://twitter.com/yourtwitterhandle)
 
 ---
 
