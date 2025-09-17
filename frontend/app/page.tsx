@@ -3,7 +3,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <GameContainer />
     </div>
   );

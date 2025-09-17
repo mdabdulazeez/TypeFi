@@ -1,9 +1,11 @@
 "use client";
 
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { Chain } from 'viem';
+import { defineChain } from 'viem';
+import { http } from 'viem';
 
-const somniaTestnet: Chain = {
+// Define Somnia testnet using defineChain for better compatibility
+const somniaTestnet = defineChain({
   id: 50312,
   name: 'Somnia Testnet',
   nativeCurrency: {
@@ -16,13 +18,17 @@ const somniaTestnet: Chain = {
     default: { http: ['https://dream-rpc.somnia.network/'] },
   },
   blockExplorers: {
-    default: { name: 'Somnia Testnet Explorer', url: 'https://somnia-testnet.socialscan.io' },
+    default: { name: 'Dreamscout Explorer', url: 'https://dreamscout.somnia.network' },
   },
   testnet: true,
-};
+});
 
 export const config = getDefaultConfig({
   appName: 'TypeFi - Blockchain Typing Game',
-  projectId: 'YOUR_PROJECT_ID', // Get this from https://cloud.walletconnect.com/
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2f05a7cae2c1bc96b5ab21f67dc21e11',
   chains: [somniaTestnet],
+  transports: {
+    [somniaTestnet.id]: http('https://dream-rpc.somnia.network/'),
+  },
+  ssr: false,
 });

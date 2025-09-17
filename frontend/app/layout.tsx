@@ -24,12 +24,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" style={{ background: '#000000' }}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ background: '#000000', color: '#f5f5f5' }}
       >
         <Providers>
-          {children}
+          <div className="min-h-screen" style={{ background: '#000000', color: '#f5f5f5' }}>
+            {children}
+          </div>
         </Providers>
       </body>
     </html>

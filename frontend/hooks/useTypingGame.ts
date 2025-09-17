@@ -11,18 +11,29 @@ export function useTypingGame() {
     functionName: 'getScores',
   });
 
-  const { writeContract: enterGame } = useWriteContract();
-  const { writeContract: submitScore } = useWriteContract();
+  const { writeContract: enterGame, isPending: isEnteringGame } = useWriteContract();
+  const { writeContract: submitScore, isPending: isSubmittingScore } = useWriteContract();
 
   const handleEnterGame = async () => {
     try {
+      console.log('Entering typing game...');
+      console.log('Contract address:', TYPING_GAME_ADDRESS);
+      console.log('Function: enter()');
+      
       await enterGame({
         address: TYPING_GAME_ADDRESS,
         abi: TYPING_GAME_ABI,
         functionName: 'enter',
       });
-    } catch (error) {
-      console.error('Error entering game:', error);
+      
+      console.log('✅ Enter game transaction sent successfully!');
+    } catch (error: any) {
+      console.error('❌ Error entering game:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        data: error.data
+      });
       throw error;
     }
   };
@@ -45,5 +56,7 @@ export function useTypingGame() {
     scores: scores as PlayerScore[] | undefined,
     enterGame: handleEnterGame,
     submitScore: handleSubmitScore,
+    isEnteringGame,
+    isSubmittingScore,
   };
 }
