@@ -85,8 +85,8 @@ TypeFi revolutionizes competitive typing by bringing speed typing competitions f
 
 | Contract | Address | Purpose |
 |----------|---------|---------|
-| **TypingGame** | [`0x6C00b6b037c988A93132C1106bDaa3B663A8F536`](https://somnia-testnet-explorer.io/address/0x6C00b6b037c988A93132C1106bDaa3B663A8F536) | Main game logic and scoring |
-| **TestToken** | [`0x84FEA364EE5c4cc4dF14BD2AcD439251c0c4eaEa`](https://somnia-testnet-explorer.io/address/0x84FEA364EE5c4cc4dF14BD2AcD439251c0c4eaEa) | Test token for development |
+| **TypingGame** | [`0x6C00b6b037c988A93132C1106bDaa3B663A8F536`](https://dreamscout.somnia.network/address/0x6C00b6b037c988A93132C1106bDaa3B663A8F536) | Main game logic and scoring |
+| **TestToken** | [`0x84FEA364EE5c4cc4dF14BD2AcD439251c0c4eaEa`](https://dreamscout.somnia.network/address/0x84FEA364EE5c4cc4dF14BD2AcD439251c0c4eaEa) | Test token for development |
 
 ### Key Functions
 
@@ -147,7 +147,7 @@ PRIVATE_KEY=your_private_key_here
 - RPC URL: `https://dream-rpc.somnia.network/`
 - Chain ID: `50312`
 - Currency Symbol: `STT`
-- Block Explorer: `https://somnia-testnet-explorer.io/`
+- Block Explorer: `https://dreamscout.somnia.network/`
 
 ### 5. Get Test Tokens
 
@@ -227,18 +227,6 @@ typefi/
 - **Accessible**: No technical knowledge required to play
 - **Competitive**: Global leaderboard drives engagement
 - **Extensible**: Framework for other skill-based competitions
-
-## 🎥 Demo Video
-
-[📹 Watch 5-minute Demo](link-to-demo-video)
-
-**Demo Highlights:**
-- Live typing competition walkthrough
-- Real-time blockchain interaction
-- Leaderboard functionality
-- Mobile responsiveness
-
-
 
 ## 📄 License
 
