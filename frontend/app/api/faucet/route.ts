@@ -15,6 +15,21 @@ export async function POST(request: NextRequest) {
     // Connect to Somnia Testnet
     const provider = new ethers.JsonRpcProvider('https://dream-rpc.somnia.network/');
     const wallet = new ethers.Wallet(FAUCET_PRIVATE_KEY, provider);
+    
+    // Check faucet wallet balance first
+    const faucetBalance = await provider.getBalance(wallet.address);
+    const faucetBalanceEth = Number(ethers.formatEther(faucetBalance));
+    
+    console.log(`Faucet wallet ${wallet.address} balance: ${faucetBalanceEth} STT`);
+    
+    // Check if faucet has enough balance (need at least 1.01 STT - 1 for transfer + 0.01 for gas)
+    if (faucetBalanceEth < 1.01) {
+      return NextResponse.json({ 
+        error: 'Faucet is empty', 
+        details: `Faucet wallet needs more STT. Current balance: ${faucetBalanceEth.toFixed(4)} STT. Please fund the faucet wallet: ${wallet.address}`
+      }, { status: 503 });
+    }
+    
     // Check recipient's current STT balance
     const recipientBalance = await provider.getBalance(recipient);
     const balanceInEther = Number(ethers.formatEther(recipientBalance));
@@ -34,19 +49,50 @@ export async function POST(request: NextRequest) {
     
     console.log(`Sending 1 STT to ${recipient}...`);
     
-    // Check faucet wallet balance before sending
-    const faucetBalance = await provider.getBalance(wallet.address);
-    const faucetBalanceEth = Number(ethers.formatEther(faucetBalance));
+    // Get current gas price from network
+    const feeData = await provider.getFeeData();
+    console.log('Fee data:', {
+      gasPrice: feeData.gasPrice?.toString(),
+      maxFeePerGas: feeData.maxFeePerGas?.toString(),
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas?.toString()
+    });
     
-    if (faucetBalanceEth < 1.1) {
-      throw new Error(`Faucet is low on funds. Available: ${faucetBalanceEth.toFixed(2)} STT`);
+    // Estimate gas for the transaction
+    let gasEstimate;
+    try {
+      gasEstimate = await provider.estimateGas({
+        to: recipient,
+        value: amountWei,
+        from: wallet.address
+      });
+      console.log('Gas estimate:', gasEstimate.toString());
+    } catch (estimateError) {
+      console.error('Gas estimation failed:', estimateError);
+      gasEstimate = 21000n; // fallback to standard transfer gas
     }
     
-    const tx = await wallet.sendTransaction({
+    // Get the current nonce
+    const nonce = await provider.getTransactionCount(wallet.address, 'pending');
+    console.log('Using nonce:', nonce);
+    
+    const txParams = {
       to: recipient,
       value: amountWei,
-      gasLimit: 21000, // Standard transfer gas limit
-    });
+      gasLimit: gasEstimate,
+      nonce: nonce,
+    };
+    
+    // Add gas price based on network support
+    if (feeData.gasPrice) {
+      txParams.gasPrice = feeData.gasPrice;
+    } else if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
+      txParams.maxFeePerGas = feeData.maxFeePerGas;
+      txParams.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+    }
+    
+    console.log('Transaction params:', txParams);
+    
+    const tx = await wallet.sendTransaction(txParams);
     
     console.log(`Sent 1 STT to ${recipient}. Tx: ${tx.hash}`);
     
