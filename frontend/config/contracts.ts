@@ -1,6 +1,6 @@
 // Contract addresses
-export const TYPING_GAME_ADDRESS = '0x6C00b6b037c988A93132C1106bDaa3B663A8F536'; // TypingGame contract deployed on Somnia Testnet (updated - no token staking required)
-export const TEST_TOKEN_ADDRESS = '0x84FEA364EE5c4cc4dF14BD2AcD439251c0c4eaEa'; // TestToken contract for getting test tokens
+export const TYPING_GAME_ADDRESS = '0x0E79f632E76A80840Ca2bc4d9b1530bf8f071De6'; // TypingGame contract deployed on Somnia Testnet
+export const TEST_TOKEN_ADDRESS = '0x188317ccdD9F55b43A15C4Eb62A1522bC62feE1f'; // TestToken contract for getting test tokens
 
 // Contract ABIs
 export const TYPING_GAME_ABI = [
