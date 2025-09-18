@@ -11,9 +11,7 @@ module.exports = {
     somniaTestnet: {
       url: "https://dream-rpc.somnia.network/",
       chainId: 50312,
-      accounts: {
-        mnemonic: process.env.MNEMONIC || "test test test test test test test test test test test junk"
-      }
+      accounts: [process.env.PRIVATE_KEY || "0000000000000000000000000000000000000000000000000000000000000000"]
     }
   }
 };
