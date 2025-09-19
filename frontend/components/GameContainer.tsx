@@ -40,8 +40,10 @@ export function GameContainer() {
           <p className="text-lg text-gray-300 mb-8">
             Connect your wallet to start playing
           </p>
-          <div className="glow-hover glow-secondary">
-            <ConnectButton />
+          <div className="flex justify-center items-center">
+            <div className="glow-hover glow-secondary transform hover:scale-105 transition-transform duration-200">
+              <ConnectButton />
+            </div>
           </div>
         </div>
       </div>
