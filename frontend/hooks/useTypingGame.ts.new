@@ -1,0 +1,140 @@
+"use client";
+
+import { TYPING_GAME_ABI, TYPING_GAME_ADDRESS, TEST_TOKEN_ADDRESS } from '@/config/contracts';
+import { PlayerScore } from '@/types/game';
+import { useReadContract, useWriteContract, useAccount } from 'wagmi';
+
+export function useTypingGame() {
+  const { data: scores } = useReadContract({
+    address: TYPING_GAME_ADDRESS,
+    abi: TYPING_GAME_ABI,
+    functionName: 'getScores',
+  });
+
+  const { writeContractAsync } = useWriteContract();
+  const { isConnected, address } = useAccount();
+
+  const TOKEN_ABI = [
+    {
+      name: 'approve',
+      type: 'function',
+      stateMutability: 'nonpayable',
+      inputs: [
+        { name: 'spender', type: 'address' },
+        { name: 'amount', type: 'uint256' }
+      ],
+      outputs: [{ type: 'bool' }]
+    }
+  ] as const;
+
+  const TOKEN_ENTRY_FEE = BigInt('10000000000000000000'); // 10 tokens with 18 decimals
+
+  // Check token balance
+  const { data: tokenBalance } = useReadContract({
+    address: TEST_TOKEN_ADDRESS as `0x${string}`,
+    abi: [
+      {
+        name: 'balanceOf',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'account', type: 'address' }],
+        outputs: [{ type: 'uint256' }]
+      }
+    ] as const,
+    functionName: 'balanceOf',
+    args: [address as `0x${string}`],
+    query: {
+      enabled: !!address,
+    }
+  });
+
+  const handleGameEntry = async () => {
+    if (!isConnected) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      console.log('Starting game entry process...');
+      
+      // Check token balance first
+      if (!tokenBalance || tokenBalance < TOKEN_ENTRY_FEE) {
+        throw new Error('Insufficient token balance. Please use the faucet to get more tokens.');
+      }
+
+      console.log('Token balance sufficient, proceeding with approval...');
+
+      // Then approve tokens
+      const approveConfig = {
+        address: TEST_TOKEN_ADDRESS as `0x${string}`,
+        abi: TOKEN_ABI,
+        functionName: 'approve',
+        args: [TYPING_GAME_ADDRESS as `0x${string}`, TOKEN_ENTRY_FEE],
+        chainId: 50312
+      } as const;
+
+      console.log('Requesting token approval...');
+      const approveTx = await writeContractAsync(approveConfig);
+      console.log('Approval transaction sent:', approveTx);
+      
+      console.log('Waiting for approval confirmation...');
+      await new Promise(r => setTimeout(r, 3000)); // Wait for transaction to be mined
+      console.log('✅ Token approval confirmed');
+
+      console.log('Entering typing game...');
+      console.log('Contract address:', TYPING_GAME_ADDRESS);
+      
+      // Now enter the game
+      const enterConfig = {
+        address: TYPING_GAME_ADDRESS as `0x${string}`,
+        abi: TYPING_GAME_ABI,
+        functionName: 'enter',
+        chainId: 50312
+      } as const;
+
+      console.log('Sending enter game transaction...');
+      const enterTx = await writeContractAsync(enterConfig);
+      console.log('Enter game transaction sent:', enterTx);
+      
+      console.log('Waiting for transaction confirmation...');
+      await new Promise(r => setTimeout(r, 3000)); // Wait for transaction to be mined
+      console.log('✅ Successfully entered the game');
+      
+    } catch (error: any) {
+      console.error('❌ Error:', error);
+      if (error.message?.includes('insufficient funds')) {
+        throw new Error('Insufficient SOM for gas. Please get some SOM from the faucet.');
+      } else if (error.message?.includes('Already entered')) {
+        throw new Error('You have already entered this game session. Try refreshing the page.');
+      } else if (error.message?.includes('Transfer failed')) {
+        throw new Error('Token transfer failed. Please check your token balance and try again.');
+      }
+      throw error;
+    }
+  };
+
+  const handleSubmitScore = async (wpm: number, accuracy: number) => {
+    if (!isConnected) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      await writeContractAsync({
+        address: TYPING_GAME_ADDRESS as `0x${string}`,
+        abi: TYPING_GAME_ABI,
+        functionName: 'submitScore',
+        args: [BigInt(wpm), BigInt(accuracy)],
+        chainId: 50312
+      } as const);
+      console.log('✅ Score submitted successfully');
+    } catch (error) {
+      console.error('Error submitting score:', error);
+      throw error;
+    }
+  };
+
+  return {
+    scores: scores as PlayerScore[] | undefined,
+    handleGameEntry,
+    handleSubmitScore
+  };
+}

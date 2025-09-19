@@ -1,10 +1,12 @@
 "use client";
 
 import { useTypingGame } from '@/hooks/useTypingGame';
+import { usePlayerNames } from '@/hooks/usePlayerNames';
 import { formatDistanceToNow } from 'date-fns';
 
 export function Leaderboard() {
   const { scores } = useTypingGame();
+  const { getPlayerName } = usePlayerNames();
 
   if (!scores || scores.length === 0) {
     return (
@@ -61,8 +63,8 @@ export function Leaderboard() {
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-mono text-sm text-gray-200">
-                      {`${score.player.slice(0, 6)}...${score.player.slice(-4)}`}
+                    <div className="font-medium text-sm text-gray-200">
+                      {getPlayerName(score.player)}
                     </div>
                     <div className="text-xs text-gray-500">
                       {new Date(Number(score.timestamp) * 1000).toLocaleDateString()}
