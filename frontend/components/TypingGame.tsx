@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { GameState, GameStats } from '@/types/game';
 import { useTypingGame } from '@/hooks/useTypingGame';
+import { usePlayerNames } from '@/hooks/usePlayerNames';
 import { InstructionsModal } from './InstructionsModal';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { useAccount, useBalance } from 'wagmi';
@@ -14,8 +15,11 @@ const GAME_DURATION = 60; // 60 seconds
 export function TypingGame() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState('');
   const { address } = useAccount();
   const { data: balance } = useBalance({ address });
+  const { getPlayerName, setPlayerName, isNameTaken } = usePlayerNames();
   
   const playerBalance = balance ? Number(formatEther(balance.value)) : 0;
   const hasEnoughForGas = playerBalance >= 0.01; // Need at least 0.01 STT for gas
@@ -196,6 +200,53 @@ export function TypingGame() {
           </div>
 
           <div className="flex items-center gap-4">
+            {address && (
+              <div className="flex items-center gap-2">
+                {isEditingName ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newPlayerName}
+                      onChange={(e) => setNewPlayerName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-lg text-sm"
+                      maxLength={20}
+                    />
+                    <button
+                      onClick={() => {
+                        if (newPlayerName && !isNameTaken(newPlayerName)) {
+                          setPlayerName(address, newPlayerName);
+                          setIsEditingName(false);
+                          setNewPlayerName('');
+                        }
+                      }}
+                      className="px-3 py-1 text-sm bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg hover:bg-purple-500/30 transition-colors"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingName(false);
+                        setNewPlayerName('');
+                      }}
+                      className="px-3 py-1 text-sm bg-gray-800/50 text-gray-400 border border-gray-700 rounded-lg hover:bg-gray-700/50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-300">{getPlayerName(address)}</span>
+                    <button
+                      onClick={() => setIsEditingName(true)}
+                      className="text-xs text-gray-500 hover:text-gray-400 transition-colors"
+                    >
+                      Edit Name
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
             {gameState.status === 'waiting' && (
               <button
                 onClick={startGame}
