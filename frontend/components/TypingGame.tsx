@@ -97,19 +97,21 @@ export function TypingGame() {
           timeElapsed: 0,
         },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error starting game:', error);
+      const message = error instanceof Error ? error.message : '';
       
-      if (error.message?.includes('Already entered')) {
+      if (message.includes('Already entered')) {
         alert('You have already entered this game session. Try refreshing the page or wait for the next game round.');
-      } else if (error.message?.includes('rejected')) {
+      } else if (message.includes('rejected')) {
         alert('Transaction rejected. Game not started.');
-      } else if (error.message?.includes('insufficient funds')) {
+      } else if (message.includes('insufficient funds')) {
         alert('Insufficient STT for gas fees. Please get more tokens from the faucet.');
-      } else if (error.message?.includes('gas')) {
+      } else if (message.includes('gas')) {
         alert('Gas estimation failed. Please try again or refresh the page.');
       } else {
-        alert(`Failed to start game: ${error.message?.split('(')[0] || 'Unknown error'}. Please try again.`);
+        const friendly = message ? message.split('(')[0] : 'Unknown error';
+        alert(`Failed to start game: ${friendly}. Please try again.`);
       }
     } finally {
       setIsLoading(false);

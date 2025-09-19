@@ -2,7 +2,6 @@
 
 import { useTypingGame } from '@/hooks/useTypingGame';
 import { usePlayerNames } from '@/hooks/usePlayerNames';
-import { formatDistanceToNow } from 'date-fns';
 
 export function Leaderboard() {
   const { scores } = useTypingGame();
@@ -37,7 +36,7 @@ export function Leaderboard() {
       </h2>
       <div className="space-y-3">
         {sortedScores.slice(0, 5).map((score, index) => {
-          const rankColors = {
+          const rankColors: Record<number, string> = {
             0: 'from-yellow-400 to-orange-400', // Gold
             1: 'from-gray-300 to-gray-500',     // Silver
             2: 'from-amber-600 to-amber-800',   // Bronze
@@ -63,7 +62,7 @@ export function Leaderboard() {
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-medium text-sm text-gray-200">
+                    <div className="font-mono text-sm text-gray-200">
                       {getPlayerName(score.player)}
                     </div>
                     <div className="text-xs text-gray-500">
