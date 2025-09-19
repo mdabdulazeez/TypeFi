@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -58,7 +58,7 @@ export function InstructionsModal({
                         1. Connect your wallet and stake tokens to enter the game
                       </p>
                       <p className="text-sm text-gray-500">
-                        2. Click "Start Game" when you're ready to begin
+                        2. Click &quot;Start Game&quot; when you&apos;re ready to begin
                       </p>
                       <p className="text-sm text-gray-500">
                         3. Type the displayed text as accurately and quickly as possible

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAccount, useBalance } from 'wagmi';
 import { formatEther } from 'viem';
 
@@ -21,17 +21,7 @@ export function AutoFaucet({ onTokensReceived }: AutoFaucetProps) {
   const balance = balanceData?.value;
   const balanceNum = balance ? Number(formatEther(balance)) : 0;
 
-  // Auto-request tokens when wallet connects and has less than 0.5 tokens
-  // (Players need some STT for gas fees and to receive rewards)
-  useEffect(() => {
-    if (isConnected && address && balance !== undefined && balanceNum < 0.5) {
-      console.log(`Player balance: ${balanceNum} STT - requesting faucet tokens`);
-      requestTokensFromFaucet();
-    }
-  }, [isConnected, address, balance, balanceNum]);
-
-
-  const requestTokensFromFaucet = async () => {
+  const requestTokensFromFaucet = useCallback(async () => {
     if (!address || isRequestingTokens) return;
 
     setIsRequestingTokens(true);
@@ -60,12 +50,21 @@ export function AutoFaucet({ onTokensReceived }: AutoFaucetProps) {
       } else {
         setError(responseData.error || 'Failed to request tokens');
       }
-    } catch (error) {
+    } catch {
       setError('Network error');
     } finally {
       setIsRequestingTokens(false);
     }
-  };
+  }, [address, isRequestingTokens, refetch, onTokensReceived]);
+
+  // Auto-request tokens when wallet connects and has less than 0.5 tokens
+  // (Players need some STT for gas fees and to receive rewards)
+  useEffect(() => {
+    if (isConnected && address && balance !== undefined && balanceNum < 0.5) {
+      console.log(`Player balance: ${balanceNum} STT - requesting faucet tokens`);
+      requestTokensFromFaucet();
+    }
+  }, [isConnected, address, balance, balanceNum, requestTokensFromFaucet]);
 
   // Show loading state if requesting tokens
   if (isRequestingTokens) {

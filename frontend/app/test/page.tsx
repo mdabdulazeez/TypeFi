@@ -16,8 +16,9 @@ export default function TestPage() {
   const switchToSomnia = async () => {
     try {
       await switchChain({ chainId: 50312 });
-    } catch (err: any) {
-      setTestError(`Failed to switch network: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setTestError(`Failed to switch network: ${message}`);
     }
   };
 
@@ -38,9 +39,10 @@ export default function TestPage() {
         functionName: 'enter',
       });
       console.log('✅ Transaction initiated:', result);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ Enter failed:', err);
-      setTestError(err.message || 'Unknown error');
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setTestError(message);
     }
   };
 
@@ -104,9 +106,9 @@ export default function TestPage() {
           <div className="text-gray-300 text-sm space-y-2">
             <p>1. Make sure your wallet is connected</p>
             <p>2. Ensure you have some STT for gas</p>
-            <p>3. Click "Test Enter Function"</p>
+            <p>3. Click &quot;Test Enter Function&quot;</p>
             <p>4. Check browser console for detailed logs</p>
-            <p>5. If you get "Already entered" - that's normal, means it worked before</p>
+            <p>5. If you get &quot;Already entered&quot; - that&apos;s normal, means it worked before</p>
           </div>
         </div>
       </div>

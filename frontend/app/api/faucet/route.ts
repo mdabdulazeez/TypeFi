@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
+import type { TransactionRequest } from 'ethers';
 
 // Faucet wallet - NEVER hardcode private keys!
 const FAUCET_PRIVATE_KEY = process.env.FAUCET_PRIVATE_KEY;
@@ -77,14 +78,14 @@ export async function POST(request: NextRequest) {
       console.log('Gas estimate:', gasEstimate.toString());
     } catch (estimateError) {
       console.error('Gas estimation failed:', estimateError);
-      gasEstimate = 21000n; // fallback to standard transfer gas
+      gasEstimate = BigInt(21000); // fallback to standard transfer gas
     }
     
     // Get the current nonce
     const nonce = await provider.getTransactionCount(wallet.address, 'pending');
     console.log('Using nonce:', nonce);
     
-    const txParams = {
+    const txParams: TransactionRequest = {
       to: recipient,
       value: amountWei,
       gasLimit: gasEstimate,
@@ -116,11 +117,11 @@ export async function POST(request: NextRequest) {
     });
     
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Faucet error:', error);
     return NextResponse.json({ 
       error: 'Failed to send tokens', 
-      details: error.message 
+      details: error instanceof Error ? error.message : 'Unknown error' 
     }, { status: 500 });
   }
 }
